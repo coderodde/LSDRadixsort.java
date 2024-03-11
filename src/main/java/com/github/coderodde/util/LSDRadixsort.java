@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 public final class LSDRadixsort {
     
+    private static final int NUMBER_OF_COUNTERS = 256;
+    
     public static void sort(int[] array) {
         sort(array, 0, array.length);
     }
@@ -13,8 +15,15 @@ public final class LSDRadixsort {
                           fromIndex,
                           toIndex);
         
-        int[] buffer = new int[array.length];
-        int[] counterMap = new int[256];
+        int rangeLength = toIndex - fromIndex;
+        
+        if (rangeLength < 2) {
+            // Trivially sorted:
+            return;
+        }
+        
+        int[] buffer = new int[rangeLength];
+        int[] counterMap = new int[NUMBER_OF_COUNTERS];
         
         sortImpl(array,
                  buffer, 
@@ -58,7 +67,7 @@ public final class LSDRadixsort {
         }
 
         // Make the counter map accummulative:
-        for (int i = 1; i != 256; i++) {
+        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
             counterMap[i] += counterMap[i - 1];
         }
         
@@ -72,8 +81,8 @@ public final class LSDRadixsort {
         System.arraycopy(buffer, 
                          0, 
                          array,
-                         0, 
-                         array.length);
+                         fromIndex, 
+                         buffer.length);
     }
     
     private static void countingSortImplSigned(int[] array,
@@ -89,7 +98,7 @@ public final class LSDRadixsort {
         }
 
         // Make the counter map accummulative:
-        for (int i = 1; i != 256; i++) {
+        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
             counterMap[i] += counterMap[i - 1];
         }
         
@@ -103,8 +112,8 @@ public final class LSDRadixsort {
         System.arraycopy(buffer, 
                          0, 
                          array,
-                         0, 
-                         array.length);
+                         fromIndex, 
+                         buffer.length);
     }
     
     private static int extractCounterIndex(int datum, int byteIndex) {
@@ -112,9 +121,9 @@ public final class LSDRadixsort {
     }
     
     private static int extractCounterIndexSigned(int datum) {
-        datum >>>= 24;
-        return datum > 127 ? (datum & 0b0111_1111) : 
-                             (datum | 0b1000_0000);
+        // We use xor ^ operator in order to flip the bit index 7 (8th bit from
+        // the least significant end):
+        return (datum >>> 24) ^ 0b1000_0000;
     }
     
     private static void checkRangeIndices(int arrayLength, 

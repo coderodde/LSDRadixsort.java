@@ -7,7 +7,7 @@ import java.util.Random;
 public class LSDRadixsortDemo {
     
     private static final int LENGTH = 50_000_000;
-    private static final int PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH = 50;
+    private static final int PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH = 0;
     
     public static void main(String[] args) {
         Random random = new Random();
@@ -17,11 +17,17 @@ public class LSDRadixsortDemo {
         int[] array2 = array1.clone();
         long endTime = System.currentTimeMillis();
         
+        int fromIndex = 
+                random.nextInt(PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH + 1);
+        
+        int toIndex = LENGTH - random.nextInt(
+                        PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH + 1);
+        
         System.out.printf("Built demo arrays in %d milliseconds.\n",
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
-        LSDRadixsort.sort(array1);
+        LSDRadixsort.sort(array1, fromIndex, toIndex);
         endTime = System.currentTimeMillis();
         long durationRadixsort = endTime - startTime;
         
@@ -29,7 +35,7 @@ public class LSDRadixsortDemo {
                           durationRadixsort);
         
         startTime = System.currentTimeMillis();
-        Arrays.sort(array2);
+        Arrays.sort(array2, fromIndex, toIndex);
         endTime = System.currentTimeMillis();
         long durationArraysSort = endTime - startTime;
         
@@ -39,6 +45,13 @@ public class LSDRadixsortDemo {
         System.out.printf("Arrays agree: %b.\n",
                           Arrays.equals(array1,
                                         array2));
+        
+        float ratio = (float) durationRadixsort / (float) durationArraysSort;
+        
+        System.out.println(
+                String.format(
+                        "Time ratio: %.3f.\n", ratio)
+                        .replace(',', '.'));
     }
     
     private static int[] createRandomIntegerArray(int length, Random random) {
