@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class LSDRadixsortDemo {
     
-    private static final int LENGTH = 50_000_000;
+    private static final int LENGTH = 100_000_000;
     private static final int PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH = 0;
     
     public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class LSDRadixsortDemo {
         endTime = System.currentTimeMillis();
         long durationArraysSort = endTime - startTime;
         
-        System.out.printf("Arrays.sort took  %d milliseconds.\n", 
+        System.out.printf("Arrays.sort took %d milliseconds.\n", 
                           durationArraysSort);
         
         System.out.printf("Arrays agree: %b.\n",
