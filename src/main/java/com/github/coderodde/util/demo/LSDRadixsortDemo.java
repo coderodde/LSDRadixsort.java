@@ -10,7 +10,10 @@ public class LSDRadixsortDemo {
     private static final int PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH = 0;
     
     public static void main(String[] args) {
-        Random random = new Random();
+        long seed = System.currentTimeMillis();
+        Random random = new Random(seed);
+        
+        System.out.printf("Seed = %d.\n", seed);
         
         long startTime = System.currentTimeMillis();
         int[] array1 = createRandomIntegerArray(LENGTH, random);
