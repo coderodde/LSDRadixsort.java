@@ -34,7 +34,7 @@ public class LSDRadixsortDemo {
         endTime = System.currentTimeMillis();
         long durationRadixsort = endTime - startTime;
         
-        System.out.printf("LSDRaidxsort took %d milliseconds.\n", 
+        System.out.printf("LSDRadixsort took %d milliseconds.\n", 
                           durationRadixsort);
         
         startTime = System.currentTimeMillis();
