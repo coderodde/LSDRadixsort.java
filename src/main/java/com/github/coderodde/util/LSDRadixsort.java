@@ -23,6 +23,15 @@ public final class LSDRadixsort {
     }
     
     /**
+     * Sorts the entire {@code long} array into ascending order.
+     * 
+     * @param array the array to sort. 
+     */
+    public static void sort(long[] array) {
+        sort(array, 0, array.length);
+    }
+    
+    /**
      * Sorts the range {@code array[fromIndex ... toIndex - 1]} into ascending
      * order.
      * 
@@ -55,6 +64,48 @@ public final class LSDRadixsort {
                  toIndex);
     }
     
+    /**
+     * Sorts the range {@code array[fromIndex ... toIndex - 1]} into ascending
+     * order.
+     * 
+     * @param array     the array holding the range.
+     * @param fromIndex the starting, inclusive index of the sorting range.
+     * @param toIndex   the ending, exclusive index of the sorting range. 
+     */
+    public static void sort(long[] array, int fromIndex, int toIndex) {
+        checkRangeIndices(array.length,
+                          fromIndex,
+                          toIndex);
+        
+        int rangeLength = toIndex - fromIndex;
+        
+        if (rangeLength < 2) {
+            // Trivially sorted:
+            return;
+        }
+        
+        // buffer and counterMap are allocated only once for the sake of 
+        // performance:
+        long[] buffer = new long[rangeLength];
+        int[] counterMap = new int[NUMBER_OF_COUNTERS];
+        
+        // Spawn sorting:
+        sortImpl(array,
+                 buffer, 
+                 counterMap,
+                 fromIndex,
+                 toIndex);
+    }
+    
+    /**
+     * Implements the actual sorting.
+     * 
+     * @param array      the array to sort.
+     * @param buffer     the sorting buffer array.
+     * @param counterMap the bucket counter array.
+     * @param fromIndex  the starting, inclusive index of the sorting range.
+     * @param toIndex    the ending, exclsuive index of the sorting range.
+     */
     private static void sortImpl(int[] array,
                                  int[] buffer, 
                                  int[] counterMap,
@@ -63,6 +114,39 @@ public final class LSDRadixsort {
         // Sort first by least-significant bytes, then by second 
         // least-significant, and finally by third least-signficant byte:
         for (int byteIndex = 0; byteIndex != 3; byteIndex++) {
+            countingSortImpl(array, 
+                             buffer, 
+                             counterMap, 
+                             byteIndex,
+                             fromIndex,
+                             toIndex);
+        }
+        
+        // Deal with the signed data:
+        countingSortImplSigned(array, 
+                               buffer, 
+                               counterMap,
+                               fromIndex,
+                               toIndex);
+    }
+    
+    /**
+     * Implements the actual sorting.
+     * 
+     * @param array      the array to sort.
+     * @param buffer     the sorting buffer array.
+     * @param counterMap the bucket counter array.
+     * @param fromIndex  the starting, inclusive index of the sorting range.
+     * @param toIndex    the ending, exclsuive index of the sorting range.
+     */
+    private static void sortImpl(long[] array,
+                                 long[] buffer, 
+                                 int[] counterMap,
+                                 int fromIndex,
+                                 int toIndex) {
+        // Sort first by least-significant bytes, then by second 
+        // least-significant, and finally by third least-signficant byte:
+        for (int byteIndex = 0; byteIndex != 7; byteIndex++) {
             countingSortImpl(array, 
                              buffer, 
                              counterMap, 
@@ -92,6 +176,49 @@ public final class LSDRadixsort {
      */
     private static void countingSortImpl(int[] array,
                                          int[] buffer,
+                                         int[] counterMap,
+                                         int byteIndex,
+                                         int fromIndex,
+                                         int toIndex) {
+        Arrays.fill(counterMap, 0);
+        
+        // Count the elements:
+        for (int i = fromIndex; i != toIndex; i++) {
+            counterMap[extractCounterIndex(array[i], byteIndex)]++;
+        }
+
+        // Make the counter map accummulative:
+        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
+            counterMap[i] += counterMap[i - 1];
+        }
+        
+        // Build the buffer array (which will end up sorted):
+        for (int i = toIndex - 1; i >= fromIndex; i--) {
+            int index = extractCounterIndex(array[i], byteIndex);
+            buffer[counterMap[index]-- - 1] = array[i];
+        }
+        
+        // Just copy the buffer to the array:
+        System.arraycopy(buffer, 
+                         0, 
+                         array,
+                         fromIndex, 
+                         buffer.length);
+    }
+    
+    /**
+     * Performs the counting sort on {@code array[fromIndex ... toIndex - 1]}.
+     * 
+     * @param array      the array to sort.
+     * @param buffer     the buffer array.
+     * @param counterMap the counter array. We reuse this in order not to
+     *                   allocate it everytime we call this method.
+     * @param byteIndex  the index of the byte that serves as the sorting key.
+     * @param fromIndex  the starting, inclusive index of the sorting range.
+     * @param toIndex    the ending, exclusive index of the sorting range.
+     */
+    private static void countingSortImpl(long[] array,
+                                         long[] buffer,
                                          int[] counterMap,
                                          int byteIndex,
                                          int fromIndex,
@@ -165,6 +292,48 @@ public final class LSDRadixsort {
     }
     
     /**
+     * Sorts the {@code array[fromIndex ... toIndex - 1]} by most significant 
+     * bytes that contain the sign bits.
+     * 
+     * @param array      the array to sort.
+     * @param buffer     the buffer array.
+     * @param counterMap the counter map. We pass this array in order not to 
+     *                   create it in this method.
+     * @param fromIndex  the starting, inclusive index of the sorting range.
+     * @param toIndex    the ending, exclusive index of the sorting range.
+     */
+    private static void countingSortImplSigned(long[] array,
+                                               long[] buffer,
+                                               int[] counterMap,
+                                               int fromIndex,
+                                               int toIndex) {
+        Arrays.fill(counterMap, 0);
+        
+        // Count the elements:
+        for (int i = fromIndex; i != toIndex; i++) {
+            counterMap[extractCounterIndexSigned(array[i])]++;
+        }
+
+        // Make the counter map accummulative:
+        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
+            counterMap[i] += counterMap[i - 1];
+        }
+        
+        // Build the output array:
+        for (int i = toIndex - 1; i >= fromIndex; i--) {
+            int index = extractCounterIndexSigned(array[i]);
+            buffer[counterMap[index]-- - 1] = array[i];
+        }
+        
+        // Just copy the buffer to the array:
+        System.arraycopy(buffer, 
+                         0, 
+                         array,
+                         fromIndex, 
+                         buffer.length);
+    }
+    
+    /**
      * Extracts the counter array index from the integer datum.
      * 
      * @param datum     the integer key.
@@ -190,6 +359,30 @@ public final class LSDRadixsort {
         // We use xor ^ operator in order to flip the bit index 7 (8th bit from
         // the least significant end):
         return (datum >>> 24) ^ 0b1000_0000;
+    }
+    
+    /**
+     * Extracts the counter array index from the {@code long} integer datum.
+     * 
+     * @param datum     the {@code long} integer key.
+     * @param byteIndex the index of the byte of the key to consider.
+     * @return          the index into counter array.
+     */
+    private static int extractCounterIndex(long datum, int byteIndex) {
+        return (int)((datum >>> (byteIndex * 8)) & 0xffL);
+    }
+    
+    /**
+     * Extracts the counter array index from the {@code long} integer datum. 
+     * Considers only the most significant byte that contains the sign bit. The 
+     * sign bit is flipped in order to put the datum in correct location in the 
+     * counter array.
+     * 
+     * @param datum the {@code long} integer key.
+     * @return      the index into counter array. 
+     */
+    private static int extractCounterIndexSigned(long datum) {
+        return (int)((datum >>> 56) ^ 0b1000_0000);
     }
     
     /**

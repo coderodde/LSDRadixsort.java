@@ -18,6 +18,8 @@ public class LSDRadixsortDemo {
         long startTime = System.currentTimeMillis();
         int[] array1 = createRandomIntegerArray(LENGTH, random);
         int[] array2 = array1.clone();
+        long[] longArray1 = createRandomLongIntegerArray(LENGTH, random);
+        long[] longArray2 = longArray1.clone();
         long endTime = System.currentTimeMillis();
         
         int fromIndex = 
@@ -28,6 +30,10 @@ public class LSDRadixsortDemo {
         
         System.out.printf("Built demo arrays in %d milliseconds.\n",
                           endTime - startTime);
+        
+        ////// int array:
+        
+        System.out.println("--- int arrays ---");
         
         startTime = System.currentTimeMillis();
         LSDRadixsort.sort(array1, fromIndex, toIndex);
@@ -55,10 +61,52 @@ public class LSDRadixsortDemo {
                 String.format(
                         "Time ratio: %.3f.\n", ratio)
                         .replace(',', '.'));
+        
+        ////// long array:
+        
+        System.out.println("--- long arrays ---");
+        
+        startTime = System.currentTimeMillis();
+        LSDRadixsort.sort(longArray1, fromIndex, toIndex);
+        endTime = System.currentTimeMillis();
+        durationRadixsort = endTime - startTime;
+        
+        System.out.printf("LSDRadixsort took %d milliseconds.\n", 
+                          durationRadixsort);
+        
+        startTime = System.currentTimeMillis();
+        Arrays.sort(longArray2, fromIndex, toIndex);
+        endTime = System.currentTimeMillis();
+        durationArraysSort = endTime - startTime;
+        
+        System.out.printf("Arrays.sort took %d milliseconds.\n", 
+                          durationArraysSort);
+        
+        System.out.printf("Arrays agree: %b.\n",
+                          Arrays.equals(longArray1,
+                                        longArray2));
+        
+        ratio = (float) durationRadixsort / (float) durationArraysSort;
+        
+        System.out.println(
+                String.format(
+                        "Time ratio: %.3f.\n", ratio)
+                        .replace(',', '.'));
     }
     
     private static int[] createRandomIntegerArray(int length, Random random) {
         int[] array = new int[length];
+        
+        for (int i = 0; i < length; i++) {
+            array[i] = random.nextInt();
+        }
+        
+        return array;
+    }
+    
+    private static long[] createRandomLongIntegerArray(int length, 
+                                                       Random random) {
+        long[] array = new long[length];
         
         for (int i = 0; i < length; i++) {
             array[i] = random.nextInt();
