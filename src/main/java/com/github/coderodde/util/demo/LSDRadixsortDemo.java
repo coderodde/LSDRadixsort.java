@@ -21,57 +21,14 @@ public class LSDRadixsortDemo {
         
         System.out.printf("Seed = %d.\n", seed);
         
-        ////// short array:
-        
-        System.out.println("--- short arrays ---");
-        
-        long startTime = System.currentTimeMillis();
-        short[] shortArray1 = createRandomShortArray(LENGTH, random);
-        short[] shortArray2 = shortArray1.clone();
-        long endTime = System.currentTimeMillis();
-        
-        System.out.printf("Built demo short arrays in %d milliseconds.\n",
-                          endTime - startTime);
-        
-        startTime = System.currentTimeMillis();
-        LSDRadixsort.sort(shortArray1, fromIndex, toIndex);
-        endTime = System.currentTimeMillis();
-        long durationRadixsort = endTime - startTime;
-        
-        System.out.printf("LSDRadixsort took %d milliseconds.\n", 
-                          durationRadixsort);
-        
-        startTime = System.currentTimeMillis();
-        Arrays.sort(shortArray2, fromIndex, toIndex);
-        endTime = System.currentTimeMillis();
-        long durationArraysSort = endTime - startTime;
-        
-        System.out.printf("Arrays.sort took %d milliseconds.\n", 
-                          durationArraysSort);
-        
-        System.out.printf("Arrays agree: %b.\n",
-                          Arrays.equals(shortArray1,
-                                        shortArray2));
-        
-        float ratio = (float) durationRadixsort / (float) durationArraysSort;
-        
-        System.out.println(
-                String.format(
-                        "Time ratio: %.3f.\n", ratio)
-                        .replace(',', '.'));
-        
-        shortArray1 = null;
-        shortArray2 = null;
-        System.gc();
-        
         ////// int array:
         
         System.out.println("--- int arrays ---");
         
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         int[] intArray1 = createRandomIntegerArray(LENGTH, random);
         int[] intArray2 = intArray1.clone();
-        endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
         
         System.out.printf("Built demo int arrays in %d milliseconds.\n", 
                           endTime - startTime);
@@ -79,7 +36,7 @@ public class LSDRadixsortDemo {
         startTime = System.currentTimeMillis();
         LSDRadixsort.sort(intArray1, fromIndex, toIndex);
         endTime = System.currentTimeMillis();
-        durationRadixsort = endTime - startTime;
+        long durationRadixsort = endTime - startTime;
         
         System.out.printf("LSDRadixsort took %d milliseconds.\n", 
                           durationRadixsort);
@@ -87,7 +44,7 @@ public class LSDRadixsortDemo {
         startTime = System.currentTimeMillis();
         Arrays.sort(intArray2, fromIndex, toIndex);
         endTime = System.currentTimeMillis();
-        durationArraysSort = endTime - startTime;
+        long durationArraysSort = endTime - startTime;
         
         System.out.printf("Arrays.sort took %d milliseconds.\n", 
                           durationArraysSort);
@@ -96,7 +53,7 @@ public class LSDRadixsortDemo {
                           Arrays.equals(intArray1,
                                         intArray2));
         
-        ratio = (float) durationRadixsort / (float) durationArraysSort;
+        float ratio = (float) durationRadixsort / (float) durationArraysSort;
         
         System.out.println(
                 String.format(
