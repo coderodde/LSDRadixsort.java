@@ -265,7 +265,7 @@ public final class LSDRadixsort {
         
         // Build the buffer array (which will end up sorted):
         for (int i = toIndex - 1; i >= fromIndex; i--) {
-            int index = extractCounterIndexSigned(array[i]);
+            int index = extractCounterIndexLo(array[i]);
             buffer[counterMap[index]-- - 1] = array[i];
         }
         
@@ -511,7 +511,7 @@ public final class LSDRadixsort {
     private static int extractCounterIndexSigned(short datum) {
         // We use xor ^ operator in order to flip the bit index 7 (8th bit from
         // the least significant end):
-        return (datum >>> 8) ^ (short)(0b1000_0000);
+        return (Short.toUnsignedInt(datum) >>> 8) ^ 0b1000_0000;
     }
     
     /**
