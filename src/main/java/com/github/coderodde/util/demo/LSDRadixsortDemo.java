@@ -1,6 +1,6 @@
 package com.github.coderodde.util.demo;
 
-import com.github.coderodde.util.LSDRadixsort;
+import com.github.coderodde.util.LsdRadixsort;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -34,7 +34,7 @@ public class LSDRadixsortDemo {
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
-        LSDRadixsort.sort(intArray1, fromIndex, toIndex);
+        LsdRadixsort.sort(intArray1, fromIndex, toIndex);
         endTime = System.currentTimeMillis();
         long durationRadixsort = endTime - startTime;
         
@@ -77,7 +77,7 @@ public class LSDRadixsortDemo {
                           endTime - startTime);
         
         startTime = System.currentTimeMillis();
-        LSDRadixsort.sort(longArray1, fromIndex, toIndex);
+        LsdRadixsort.sort(longArray1, fromIndex, toIndex);
         endTime = System.currentTimeMillis();
         durationRadixsort = endTime - startTime;
         

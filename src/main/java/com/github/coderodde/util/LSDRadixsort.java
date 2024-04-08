@@ -4,14 +4,16 @@ import java.util.Arrays;
 
 /**
  * This class provides the method for sorting {@code int} arrays using 
- * least-significant digit (LSD) radix sort.
+ * least-significant digit (LSD) radix sort with radix of 256.
  */
-public final class LSDRadixsort {
+public final class LsdRadixsort {
     
     /**
      * The number of counters in the counter array.
      */
-    private static final int NUMBER_OF_COUNTERS = 256;
+    private static final int RADIX = 256;
+    
+    private LsdRadixsort() {}
     
     /**
      * Sorts the entire {@code int} array into ascending order.
@@ -54,7 +56,7 @@ public final class LSDRadixsort {
         // buffer and counterMap are allocated only once for the sake of 
         // performance:
         int[] buffer = new int[rangeLength];
-        int[] counterMap = new int[NUMBER_OF_COUNTERS];
+        int[] counterMap = new int[RADIX];
         
         // Spawn sorting:
         sortImpl(array,
@@ -87,7 +89,7 @@ public final class LSDRadixsort {
         // buffer and counterMap are allocated only once for the sake of 
         // performance:
         long[] buffer = new long[rangeLength];
-        int[] counterMap = new int[NUMBER_OF_COUNTERS];
+        int[] counterMap = new int[RADIX];
         
         // Spawn sorting:
         sortImpl(array,
@@ -113,7 +115,7 @@ public final class LSDRadixsort {
                                  int toIndex) {
         // Sort first by least-significant bytes, then by second 
         // least-significant, and finally by third least-signficant byte:
-        for (int byteIndex = 0; byteIndex != 3; byteIndex++) {
+        for (int byteIndex = 0; byteIndex < 3; byteIndex++) {
             countingSortImpl(array, 
                              buffer, 
                              counterMap, 
@@ -188,7 +190,7 @@ public final class LSDRadixsort {
         }
 
         // Make the counter map accummulative:
-        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
+        for (int i = 1; i != RADIX; i++) {
             counterMap[i] += counterMap[i - 1];
         }
         
@@ -231,7 +233,7 @@ public final class LSDRadixsort {
         }
 
         // Make the counter map accummulative:
-        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
+        for (int i = 1; i != RADIX; i++) {
             counterMap[i] += counterMap[i - 1];
         }
         
@@ -273,7 +275,7 @@ public final class LSDRadixsort {
         }
 
         // Make the counter map accummulative:
-        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
+        for (int i = 1; i != RADIX; i++) {
             counterMap[i] += counterMap[i - 1];
         }
         
@@ -315,7 +317,7 @@ public final class LSDRadixsort {
         }
 
         // Make the counter map accummulative:
-        for (int i = 1; i != NUMBER_OF_COUNTERS; i++) {
+        for (int i = 1; i != RADIX; i++) {
             counterMap[i] += counterMap[i - 1];
         }
         
