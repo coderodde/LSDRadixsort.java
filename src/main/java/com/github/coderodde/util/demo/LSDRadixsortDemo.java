@@ -7,7 +7,7 @@ import java.util.Random;
 public class LSDRadixsortDemo {
     
     private static final int LENGTH = 100_000_000;
-    private static final int PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH = 0;
+    private static final int PREFIX_SUFFIX_EXCLUSION_RANGE_LENGTH = 50;
     
     public static void main(String[] args) {
         long seed = System.currentTimeMillis();
